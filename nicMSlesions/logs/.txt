@@ -1,0 +1,36 @@
+[3;J[H[2J##################################################
+# ------------                                   #
+# nicMSlesions                                   #
+# ------------                                   #
+# MS WM lesion segmentation                      #
+#                                                #
+# -------------------------------                #
+# (c) Sergi Valverde 2017                        #
+# Neuroimage Computing Group                     #
+# -------------------------------                #
+##################################################
+
+Can not use cuDNN on context None: cannot compile with cuDNN. We got this error:
+In file included from /tmp/try_flags_LGiiu3.c:4:0:
+/usr/include/cudnn.h:63:26: fatal error: driver_types.h: No such file or directory
+compilation terminated.
+
+^C^C^C^Cc
+Traceback (most recent call last):
+  File "nic_train_network_batch.py", line 85, in <module>
+    from CNN.base import train_cascaded_model
+  File "/src/libs/CNN/base.py", line 6, in <module>
+    from build_model_nolearn import define_training_layers
+  File "/src/libs/CNN/build_model_nolearn.py", line 7, in <module>
+    from lasagne.layers import InputLayer, DenseLayer, DropoutLayer, FeaturePoolLayer, BatchNormLayer, prelu
+  File "/miniconda/lib/python2.7/site-packages/lasagne/__init__.py", line 12, in <module>
+    import theano
+  File "/miniconda/lib/python2.7/site-packages/theano/__init__.py", line 156, in <module>
+    import theano.gpuarray
+  File "/miniconda/lib/python2.7/site-packages/theano/gpuarray/__init__.py", line 227, in <module>
+    use(config.device)
+  File "/miniconda/lib/python2.7/site-packages/theano/gpuarray/__init__.py", line 214, in use
+    init_dev(device, preallocate=preallocate)
+  File "/miniconda/lib/python2.7/site-packages/theano/gpuarray/__init__.py", line 159, in init_dev
+    pygpu.blas.gemm(0, tmp, tmp, 0, tmp, overwrite_c=True)
+KeyboardInterrupt
