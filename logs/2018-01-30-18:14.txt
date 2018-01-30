@@ -1,0 +1,18 @@
+[3;J[H[2J##################################################
+# ------------                                   #
+# nicMSlesions                                   #
+# ------------                                   #
+# MS WM lesion segmentation                      #
+#                                                #
+# -------------------------------                #
+# (c) Sergi Valverde 2017                        #
+# Neuroimage Computing Group                     #
+# -------------------------------                #
+##################################################
+
+Can not use cuDNN on context None: cannot compile with cuDNN. We got this error:
+In file included from /tmp/try_flags_Bsftd8.c:4:0:
+/usr/include/cudnn.h:63:26: fatal error: driver_types.h: No such file or directory
+compilation terminated.
+
+^C^C^C
