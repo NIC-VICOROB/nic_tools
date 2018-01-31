@@ -127,6 +127,7 @@ def main():
     option = None
 
     # Update docker
+    print('Checking for updates...', end=' ')
     with open(os.devnull, 'wb') as dev_null:
         check_call(
             'docker pull nicvicorob/newmslesions',
@@ -134,6 +135,7 @@ def main():
             stdout=dev_null,
             shell=True
         )
+    print('Done')
 
     # Infinite loop
     while option is not 4:
