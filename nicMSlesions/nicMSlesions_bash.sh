@@ -12,8 +12,7 @@
 RUNMACHINE='true'
 DOCKERMACHINE='docker'
 UPDATEDOCKER='false'
-if [ $# == 0 ];DATE=`date '+%Y-%m-%d-%H:%M'`
-echo $DATE
+DATE=`date '+%Y-%m-%d-%H:%M'`
 # helper function to show the menu help
 display_help() {
     echo " "
@@ -35,12 +34,6 @@ while [[ $# -gt 0 ]]
 do
     key="$1"
     case $key in
-        -d|--data)
-            DATAPATH="$2"
-            RUNMACHINE='true'
-            shift
-            shift
-            ;;
         -g|--gpu)
             DOCKERMACHINE="nvidia-docker"
             shift
