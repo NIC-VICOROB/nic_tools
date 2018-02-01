@@ -133,7 +133,7 @@ def parse_input(option, dataset_path):
             config_parser.add_section('action')
             config_parser.set('action', 'action_num', 'old')
             config_parser.add_section('general')
-            config_parser.set('general', 'num_modality', 0)
+            config_parser.set('general', 'num_modality', 4)
             config_parser.set('general', 'base_folder_name', 'time1')
             config_parser.set('general', 'followup_folder_name', 'time2')
             config_parser.set('general', 'gt_name', '')
@@ -163,9 +163,9 @@ def parse_input(option, dataset_path):
         # Global command that works for --devel and normal
         docker_cmd = [
             'docker', 'run',
-            '-v', '%s:/WorkingFiles/LR.conf' % os.path.realpath(config_name),
-            '-v', '%s:/WorkingFiles/in/:rw' % dataset_path,
-            '-v', '%s:/WorkingFiles/models:rw' % os.path.realpath('models'),
+            '-v', '%s:/home/docker/LR.conf' % os.path.realpath(config_name),
+            '-v', '%s:/home/docker/in/:rw' % dataset_path,
+            '-v', '%s:/home/docker/models:rw' % os.path.realpath('models'),
             '-it',
             'nicvicorob/newmslesions'
         ]
