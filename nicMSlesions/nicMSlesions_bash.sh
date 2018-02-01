@@ -77,8 +77,8 @@ then
     echo  "##################################################"
     echo " "
     eval $DOCKERMACHINE run -ti  \
-         -v $PWD/config:/src/config:rw \
-         -v $PWD/models:/src/nets:rw \
+         -v $PWD/config:/home/docker/src/config:rw \
+         -v $PWD/models:/home/docker/src/nets:rw \
          -v /:/data:rw \
          nicvicorob/mslesions:latest python -u nic_train_network_batch.py --docker | \
          tee $PWD/logs/$DATE.txt

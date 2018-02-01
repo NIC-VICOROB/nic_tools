@@ -90,11 +90,12 @@ then
     echo  "# -------------------------------                #"
     echo  "##################################################"
     echo " "
-    xhost +local:root;
     eval $DOCKERMACHINE run -ti  \
-       -e DISPLAY=$DISPLAY \
-       -v /tmp/.X11-unix:/tmp/.X11-unix \
-       -v $DATAPATH:/data:rw \
-       -v $PWD/models:/src/nets:rw \
-       nicvicorob/mslesions  python -u app.py --docker | tee $PWD/logs/$DATE.txt
+         -e DISPLAY=$DISPLAY \
+         -u="docker" \
+         -v /tmp/.X11-unix:/tmp/.X11-unix \
+         -v $DATAPATH:/data:rw \
+         -v $PWD/models:/home/docker/src/nets:rw \
+         -v $PWD/config:/home/docker/src/config:rw \
+         nicvicorob/mslesions  python -u app.py --docker | tee $PWD/logs/$DATE.txt
 fi
