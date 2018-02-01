@@ -12,6 +12,8 @@
 RUNMACHINE='true'
 DOCKERMACHINE='docker'
 UPDATEDOCKER='false'
+
+CURRENT_FOLDER=`dirname $0`
 DATE=`date '+%Y-%m-%d-%H:%M'`
 # helper function to show the menu help
 display_help() {
@@ -77,9 +79,9 @@ then
     echo  "##################################################"
     echo " "
     eval $DOCKERMACHINE run -ti  \
-         -v $PWD/config:/home/docker/src/config:rw \
-         -v $PWD/models:/home/docker/src/nets:rw \
+         -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
+         -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
          -v /:/data:rw \
          nicvicorob/mslesions:latest python -u nic_train_network_batch.py --docker | \
-         tee $PWD/logs/$DATE.txt
+         tee $CURRENT_FOLDER/logs/$DATE.txt
 fi

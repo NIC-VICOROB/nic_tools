@@ -13,6 +13,7 @@ RUNMACHINE='false'
 DOCKERMACHINE='docker'
 UPDATEDOCKER='false'
 
+CURRENT_FOLDER=`dirname $0`
 DATE=`date '+%Y-%m-%d-%H:%M'`
 
 # helper function to show the menu help
@@ -95,7 +96,7 @@ then
          -u="docker" \
          -v /tmp/.X11-unix:/tmp/.X11-unix \
          -v $DATAPATH:/data:rw \
-         -v $PWD/models:/home/docker/src/nets:rw \
-         -v $PWD/config:/home/docker/src/config:rw \
-         nicvicorob/mslesions  python -u app.py --docker | tee $PWD/logs/$DATE.txt
+         -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
+         -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
+         nicvicorob/mslesions  python -u app.py --docker | tee $CURRENT_FOLDER/logs/$DATE.txt
 fi
