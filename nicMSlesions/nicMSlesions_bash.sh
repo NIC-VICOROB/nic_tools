@@ -13,7 +13,7 @@ RUNMACHINE='true'
 DOCKERMACHINE='docker'
 UPDATEDOCKER='false'
 
-CURRENT_FOLDER=`dirname $0`
+CURRENT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=`date '+%Y-%m-%d-%H:%M'`
 # helper function to show the menu help
 display_help() {
