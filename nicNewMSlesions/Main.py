@@ -184,7 +184,7 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Run the longitudinal MS lesion segmentation docker.')
     parser.add_argument(
         '-f', '--folder',
-        dest='data_path', default='~/data',
+        dest='data_path', default='/data/longitudinal/',
         help='Folder where the dataset is stored'
     )
     parser.add_argument(
