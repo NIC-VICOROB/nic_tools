@@ -66,13 +66,14 @@ def parse_input(option, dataset_path):
          to change the name of the Basal and 12M folders for the old pipeline.
         After introducing the parameters, the docker is called.
     """
+    path = '/'.join(os.path.abspath(__file__).split('/')[:-1])
     if option not in ['old', 'new', 1, 2, 3]:
         if option is not 4:
             print('Invalid option')
     else:
         # Let's create that config file for next time...
         if option not in ['old', 'new']:
-            config_name = './config/LR.conf'
+            config_name = os.path.join(path, 'config', 'LR.conf')
             config_file = open(config_name, 'w')
             config_parser = ConfigParser.ConfigParser()
 
@@ -80,7 +81,7 @@ def parse_input(option, dataset_path):
             # - Action = the operation required to be run in the docker
             actions = ['train', 'test', 'old']
             config_parser.add_section('action')
-            config_parser.set('action', 'action_num', actions[option - 1])
+            config_parser.set('action', 'action', actions[option - 1])
 
             # - General parameters
             config_parser.add_section('general')
@@ -127,11 +128,11 @@ def parse_input(option, dataset_path):
             )
 
         elif option is 'old':
-            config_name = './config/old.conf'
+            config_name = os.path.join(path, 'config', 'old.conf')
             config_file = open(config_name, 'w')
             config_parser = ConfigParser.ConfigParser()
             config_parser.add_section('action')
-            config_parser.set('action', 'action_num', 'old')
+            config_parser.set('action', 'action', 'old')
             config_parser.add_section('general')
             config_parser.set('general', 'num_modality', 4)
             config_parser.set('general', 'base_folder_name', 'time1')
@@ -142,11 +143,11 @@ def parse_input(option, dataset_path):
             config_parser.add_section('model')
             config_parser.set('model', 'lr_model', '')
         else:
-            config_name = './config/new.conf'
+            config_name = os.path.join(path, 'config', 'new.conf')
             config_file = open(config_name, 'w')
             config_parser = ConfigParser.ConfigParser()
             config_parser.add_section('action')
-            config_parser.set('action', 'action_num', 'test')
+            config_parser.set('action', 'action', 'test')
             config_parser.add_section('general')
             config_parser.set('general', 'num_modality', 4)
             config_parser.set('general', 'base_folder_name', 'time1')
@@ -163,9 +164,9 @@ def parse_input(option, dataset_path):
         # Global command that works for --devel and normal
         docker_cmd = [
             'docker', 'run',
-            '-v', '%s:/home/docker/LR.conf' % os.path.realpath(config_name),
+            '-v', '%s:/home/docker/LR.conf' % config_name,
             '-v', '%s:/home/docker/in/:rw' % dataset_path,
-            '-v', '%s:/home/docker/models:rw' % os.path.realpath('models'),
+            '-v', '%s:/home/docker/models:rw' % os.path.join(path, 'models'),
             '-it',
             'nicvicorob/newmslesions'
         ]
