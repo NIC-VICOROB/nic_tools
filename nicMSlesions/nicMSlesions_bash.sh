@@ -12,16 +12,19 @@
 RUNMACHINE='true'
 DOCKERMACHINE='docker'
 UPDATEDOCKER='false'
-
+TRAINING='false'
+INFERENCE='true'
 CURRENT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=`date '+%Y-%m-%d-%H:%M'`
 # helper function to show the menu help
 display_help() {
     echo " "
     echo "nicMSLesions"
-    echo "-g | --gpu                  --> Use GPU instead of CPU (requires nvidia-docker)"
-    echo "-u | --update               --> update software to the latest version"
-    echo "-h | --help                 --> shows this message"
+    echo "-t | --train                   --> perform training
+    echo "-i | --inference               --> perform inference
+    echo "-g | --gpu                     --> Use GPU instead of CPU (requires nvidia-docker)"
+    echo "-u | --update                  --> update software to the latest version"
+    echo "-h | --help                    --> shows this message"
     echo " "
 }
 
@@ -48,6 +51,14 @@ do
             display_help
             shift
             exit
+            ;;
+        -i|--inference)
+            INFERENCE="true"
+            shift
+            ;;
+        -t|--training)
+            TRAINING="true"
+            shift
             ;;
         --default)
             echo "Incorrect option/s..."
@@ -78,10 +89,23 @@ then
     echo  "# -------------------------------                #"
     echo  "##################################################"
     echo " "
-    eval $DOCKERMACHINE run -ti  \
-         -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
-         -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
-         -v /:/data:rw \
-         nicvicorob/mslesions:latest python -u nic_train_network_batch.py --docker | \
-         tee $CURRENT_FOLDER/logs/$DATE.txt
+    if [ $TRAINING == 'true' ];
+       then
+           eval $DOCKERMACHINE run -ti  \
+                -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
+                -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
+                -v /:/data:rw \
+                nicvicorob/mslesions:latest python -u nic_train_network_batch.py --docker | \
+               tee $CURRENT_FOLDER/logs/$DATE.txt
+    fi
+
+    if [ $INFERENCE == 'true' ];
+       then
+           eval $DOCKERMACHINE run -ti  \
+                -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
+                -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
+                -v /:/data:rw \
+                nicvicorob/mslesions:latest python -u nic_infer_segmentation_batch.py --docker | \
+               tee $CURRENT_FOLDER/logs/$DATE.txt
+    fi
 fi
