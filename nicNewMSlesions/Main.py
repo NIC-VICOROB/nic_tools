@@ -40,163 +40,111 @@ def color_codes():
     return codes
 
 
-def display_options_menu():
+def parse_input(option, dataset_path, options):
     """
-    Legacy menu to select the method to be run inside the docker container.
-        Options 1 and 2 correspond to the logistic regression model, while option 3 corresponds to the
-        old longitudinal pipeline.
-        :return: The option chosen by the user
-    """
-    c = color_codes()
-    # Display the option menus
-
-    print(c['c'] + '\nWelcome....' + c['nc'])
-    print(c['y'] + '\tChoose an option:' + c['nc'])
-    print(c['g'] + '\t\t1- Train a model' + c['nc'])
-    print(c['y'] + '\t\t2- Test a model' + c['nc'])
-    print(c['g'] + '\t\t3- Test the old pipeline' + c['nc'])
-    print(c['r'] + '\t\t4- Exit' + c['nc'])
-    return int(raw_input(c['r'] + "\tYour choice:  " + c['nc']))
-
-
-def parse_input(option, dataset_path):
-    """
-    Legacy menu to select the parameters for the docker container.
-        This menu should be used to work with the logistic regression model. There is also the option
-         to change the name of the Basal and 12M folders for the old pipeline.
-        After introducing the parameters, the docker is called.
+    Function that prepares a config file for the docker. It also selects the container where everything will be run.
+    Right now, we have this option to work with both a production image for the hospitals, and a developer image to
+    test the algorithms before pushing them to production.
+    :param option: String that represents the option we'll be running on the docker container.
+    :param dataset_path: Path for the dataset that will be mounted on the container.
+    :return: None.
     """
     path = '/'.join(os.path.abspath(__file__).split('/')[:-1])
-    if option not in ['old', 'new', 1, 2, 3]:
-        if option is not 4:
-            print('Invalid option')
+    # Let's create that config file for next time...
+    baseline_folder = options['time1']
+    followup_folder = options['time2']
+    if option is 'old' or option is 'new':
+        config_name = os.path.join(path, 'config', 'old.conf')
+        action = 'old'
     else:
-        # Let's create that config file for next time...
-        if option not in ['old', 'new']:
-            config_name = os.path.join(path, 'config', 'LR.conf')
-            config_file = open(config_name, 'w')
-            config_parser = ConfigParser.ConfigParser()
+        config_name = os.path.join(path, 'config', 'lr.conf')
+        action = option
 
-            '''Add the settings to the structure parser of the file, and let's write it out...'''
-            # - Action = the operation required to be run in the docker
-            actions = ['train', 'test', 'old']
-            config_parser.add_section('action')
-            config_parser.set('action', 'action', actions[option - 1])
+    config_file = open(config_name, 'w')
+    config_parser = ConfigParser.ConfigParser()
+    config_parser.add_section('action')
+    config_parser.set('action', 'action', action)
+    config_parser.add_section('general')
+    if option is 'old':
+        config_parser.add_section('preprocessing')
+        config_parser.set('preprocessing', 'wm_seg_method', 0)
+    config_parser.set('general', 'num_modality', 4)
+    config_parser.set('general', 'base_folder_name', baseline_folder)
+    config_parser.set('general', 'followup_folder_name', followup_folder)
+    config_parser.set('general', 'gt_name', 'lesionMask.nii')
+    config_parser.add_section('model')
+    config_parser.set('model', 'lr_model', 'LRModel.h5')
 
-            # - General parameters
-            config_parser.add_section('general')
-            # The segmentation method only affects preprocessing
-            # All the options not related to evaluation need to define which is the baseline and follow-up folders
-            config_parser.set(
-                'general',
-                'base_folder_name',
-                raw_input("Enter the Baseline folder name (empty for Basal): ") or 'Basal'
-            )
-            config_parser.set(
-                'general',
-                'followup_folder_name',
-                (raw_input("Enter the followup folder name (empty for 12M): ") or '12M')
-            )
-            print("Number of modalities: (2 = PD and FLAIR), (3 = T2, PD, and FLAIR), (4 = T1, T2, PD, and FLAIR)")
-            config_parser.set(
-                'general',
-                'num_modality',
-                (raw_input("Enter the num of modality to work with (empty for 4): ") or '4')
-            )
-            # All the training options, and the evaluation one use the GT images
-            if option is 1:
-                config_parser.set(
-                    'general',
-                    'gt_name',
-                    (raw_input("Enter the ground truth file name (empty for lesionMask.nii): ") or 'lesionMask.nii')
-                )
+    config_parser.write(config_file)
+    config_file.close()
 
-            # - Preprocessing options
-            config_parser.add_section('preprocessing')
-            config_parser.set(
-                'preprocessing',
-                'wm_seg_method',
-                (raw_input("Enter WM segmentation method (empty for 0): ") or '0')
-            )
+    # Global command that works for any input
+    if option is 'old':
+        docker_image = 'nicvicorob/newmslesions:latest'
+    else:
+        docker_image = 'nicvicorob/newmslesions:devel'
 
-            # - Training the model with the whole dataset
-            config_parser.add_section('model')
-            config_parser.set(
-                'model',
-                'lr_model',
-                raw_input("Enter the name for the LR model's file (LRModel.h5 file): " or 'LRModel.h5')
-            )
-
-        elif option is 'old':
-            config_name = os.path.join(path, 'config', 'old.conf')
-            config_file = open(config_name, 'w')
-            config_parser = ConfigParser.ConfigParser()
-            config_parser.add_section('action')
-            config_parser.set('action', 'action', 'old')
-            config_parser.add_section('general')
-            config_parser.set('general', 'num_modality', 4)
-            config_parser.set('general', 'base_folder_name', 'time1')
-            config_parser.set('general', 'followup_folder_name', 'time2')
-            config_parser.set('general', 'gt_name', '')
-            config_parser.add_section('preprocessing')
-            config_parser.set('preprocessing', 'wm_seg_method', '0')
-            config_parser.add_section('model')
-            config_parser.set('model', 'lr_model', '')
-        else:
-            config_name = os.path.join(path, 'config', 'new.conf')
-            config_file = open(config_name, 'w')
-            config_parser = ConfigParser.ConfigParser()
-            config_parser.add_section('action')
-            config_parser.set('action', 'action', 'test')
-            config_parser.add_section('general')
-            config_parser.set('general', 'num_modality', 4)
-            config_parser.set('general', 'base_folder_name', 'time1')
-            config_parser.set('general', 'followup_folder_name', 'time2')
-            config_parser.set('general', 'gt_name', '')
-            config_parser.add_section('preprocessing')
-            config_parser.set('preprocessing', 'wm_seg_method', '0')
-            config_parser.add_section('model')
-            config_parser.set('model', 'lr_model', 'LRModel.h5')
-
-        config_parser.write(config_file)
-        config_file.close()
-
-        # Global command that works for --devel and normal
-        docker_cmd = [
-            'docker', 'run',
-            '-v', '%s:/home/docker/LR.conf' % config_name,
-            '-v', '%s:/home/docker/in/:rw' % dataset_path,
-            '-v', '%s:/home/docker/models:rw' % os.path.join(path, 'models'),
-            '-it',
-            'nicvicorob/newmslesions'
-        ]
-        check_call(docker_cmd)
+    docker_cmd = [
+        'docker', 'run',
+        '-v', '%s:/home/docker/LR.conf' % config_name,
+        '-v', '%s:/home/docker/in/:rw' % dataset_path,
+        '-v', '%s:/home/docker/models:rw' % os.path.join(path, 'models'),
+        '-it',
+        docker_image
+    ]
+    check_call(docker_cmd)
 
 
 def parse_args():
     """
     Function to control the arguments of the python script when called from the command line.
-        If no argument is given, we assume a default mode where the user only wants to process
-        with the old pipeline. Otherwise the --devel flag should be used. This flag allows to use
-        the legacy display menu from Mostafa Salem with the limited number of options for:
-        Training, testing and old pipeline.
-        :return: Dictionary with the argument values
+    If no argument is given, we assume a default mode where the user only wants to process
+    with the old pipeline. Otherwise the --devel flag should be used. This flag allows to use
+    the legacy display menu from Mostafa Salem with the limited number of options for:
+    Training, testing and old pipeline.
+    :return: Dictionary with the argument values
     """
     parser = argparse.ArgumentParser(description='Run the longitudinal MS lesion segmentation docker.')
-    parser.add_argument(
-        '-f', '--folder',
-        dest='data_path', default='/data/longitudinal/',
-        help='Folder where the dataset is stored'
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument(
+        '-f', '--old',
+        dest='old_path', default=None,
+        help='Option to use the old pipeline in the production docker. The second parameter should be the folder where'
+             'the patients are stored.'
     )
-    parser.add_argument(
-        '-n', '--new',
-        dest='new', action='store_true', default=False,
-        help='Option to run the new pipeline without menu prompts'
-    )
-    parser.add_argument(
+    group.add_argument(
         '-d', '--devel',
-        dest='devel', action='store_true', default=False,
-        help='Developer option with legacy menu'
+        dest='new_path', default=None,
+        help='Option to use the old pipeline in the development docker. The second parameter should be the folder where'
+             'the patients are stored.'
+    )
+    group.add_argument(
+        '-t', '--train',
+        dest='train_path', default=None,
+        help='Option to train the logistic regression model. The second parameter should be the folder where'
+             'the patients are stored.'
+    )
+    group.add_argument(
+        '-T', '--test',
+        dest='test_path', default=None,
+        help='Option to test a logistic regression model. The second parameter should be the folder where'
+             'the patients are stored.'
+    )
+    group.add_argument(
+        '-l', '--leave-one-out',
+        dest='loo_path', default=None,
+        help='Option to use the logistic regression model with leave-one-out cross-validation. The second parameter'
+             ' should be the folder where the patients are stored.'
+    )
+    parser.add_argument(
+        '-B', '--time1',
+        dest='time1', default='time1',
+        help='Name of the baseline folder'
+    )
+    parser.add_argument(
+        '-F', '--time2',
+        dest='time2', default='time2',
+        help='Name of the followup folder'
     )
     return vars(parser.parse_args())
 
@@ -209,7 +157,13 @@ def main():
     print('Checking for updates...', end=' ')
     with open(os.devnull, 'wb') as dev_null:
         check_call(
-            'docker pull nicvicorob/newmslesions',
+            'docker pull nicvicorob/newmslesions:devel',
+            stderr=dev_null,
+            stdout=dev_null,
+            shell=True
+        )
+        check_call(
+            'docker pull nicvicorob/newmslesions:latest',
             stderr=dev_null,
             stdout=dev_null,
             shell=True
@@ -219,17 +173,17 @@ def main():
     # Argument parsing. If the devel option is used we use the legacy menu. Otherwise just run a simplified
     # version based on the old pipeline.
     options = parse_args()
-    if options['devel']:
-        option = None
+    if options['old_path'] is not None:
+        parse_input('old', options['old_path'], options)
+    elif options['new_path'] is not None:
+        parse_input('new', options['new_path'], options)
+    elif options['train_path'] is not None:
+        parse_input('train', options['train_path'], options)
+    elif options['test_path'] is not None:
+        parse_input('test', options['test_path'], options)
+    elif options['loo_path'] is not None:
+        parse_input('loo', options['loo_path'], options)
 
-        # Infinite loop
-        while option is not 4:
-            option = display_options_menu()
-            parse_input(option, options['data_path'])
-
-        print('Bye bye....')
-    else:
-        parse_input('old', options['data_path'])
 
 if __name__ == "__main__":
     main()
