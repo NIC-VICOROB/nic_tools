@@ -20,8 +20,8 @@ DATE=`date '+%Y-%m-%d-%H:%M'`
 display_help() {
     echo " "
     echo "nicMSLesions"
-    echo "-t | --train                   --> perform training
-    echo "-i | --inference               --> perform inference
+    echo "-t | --train                   --> perform training"
+    echo "-i | --inference               --> perform inference"
     echo "-g | --gpu                     --> Use GPU instead of CPU (requires nvidia-docker)"
     echo "-u | --update                  --> update software to the latest version"
     echo "-h | --help                    --> shows this message"
