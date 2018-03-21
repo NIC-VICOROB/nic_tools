@@ -105,7 +105,7 @@ def parse_args():
     :return: Dictionary with the argument values
     """
     parser = argparse.ArgumentParser(description='Run the longitudinal MS lesion segmentation docker.')
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group()
     group.add_argument(
         '-f', '--old',
         dest='old_path', default='/data/longitudinal/',
