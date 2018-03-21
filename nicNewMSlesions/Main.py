@@ -108,7 +108,7 @@ def parse_args():
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
         '-f', '--old',
-        dest='old_path', default=None,
+        dest='old_path', default='/data/longitudinal/',
         help='Option to use the old pipeline in the production docker. The second parameter should be the folder where'
              'the patients are stored.'
     )
@@ -173,9 +173,7 @@ def main():
     # Argument parsing. If the devel option is used we use the legacy menu. Otherwise just run a simplified
     # version based on the old pipeline.
     options = parse_args()
-    if options['old_path'] is not None:
-        parse_input('old', options['old_path'], options)
-    elif options['new_path'] is not None:
+    if options['new_path'] is not None:
         parse_input('new', options['new_path'], options)
     elif options['train_path'] is not None:
         parse_input('train', options['train_path'], options)
@@ -183,6 +181,8 @@ def main():
         parse_input('test', options['test_path'], options)
     elif options['loo_path'] is not None:
         parse_input('loo', options['loo_path'], options)
+    elif options['old_path'] is not None:
+        parse_input('old', options['old_path'], options)
 
 
 if __name__ == "__main__":
