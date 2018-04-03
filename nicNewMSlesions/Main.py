@@ -56,6 +56,9 @@ def parse_input(option, dataset_path, options):
     if option is 'old' or option is 'new':
         config_name = os.path.join(path, 'config', 'old.conf')
         action = 'old'
+    elif option is 'gui':
+        config_name = os.path.join(path, 'config', 'gui.conf')
+        action = option
     else:
         config_name = os.path.join(path, 'config', 'lr.conf')
         action = option
@@ -86,6 +89,8 @@ def parse_input(option, dataset_path, options):
 
     docker_cmd = [
         'docker', 'run',
+        '-e', 'DISPLAY=%s' % os.environ['DISPLAY'],
+        '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
         '-v', '%s:/home/docker/LR.conf' % config_name,
         '-v', '%s:/home/docker/in/:rw' % dataset_path,
         '-v', '%s:/home/docker/models:rw' % os.path.join(path, 'models'),
@@ -136,6 +141,12 @@ def parse_args():
         help='Option to use the logistic regression model with leave-one-out cross-validation. The second parameter'
              ' should be the folder where the patients are stored.'
     )
+    group.add_argument(
+        '-g', '--gui',
+        dest='gui_path', default=None,
+        help='Option to use a gui to setup parameters for segmentation and select the method. The second parameter'
+             ' should be the folder where the patients are stored.'
+    )
     parser.add_argument(
         '-B', '--time1',
         dest='time1', default='time1',
@@ -181,6 +192,8 @@ def main():
         parse_input('test', options['test_path'], options)
     elif options['loo_path'] is not None:
         parse_input('loo', options['loo_path'], options)
+    elif options['gui_path'] is not None:
+        parse_input('gui', options['gui_path'], options)
     elif options['old_path'] is not None:
         parse_input('old', options['old_path'], options)
 
