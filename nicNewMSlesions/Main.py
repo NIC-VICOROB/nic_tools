@@ -50,6 +50,8 @@ def parse_input(option, dataset_path, options):
     :return: None.
     """
     path = '/'.join(os.path.abspath(__file__).split('/')[:-1])
+    if not os.path.isdir(os.path.join(path, 'config')):
+        os.mkdir(os.path.join(path, 'config'))
     # Let's create that config file for next time...
     baseline_folder = options['time1']
     followup_folder = options['time2']
