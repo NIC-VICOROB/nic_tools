@@ -198,7 +198,7 @@ def main():
         parse_input('gui', options['gui_path'], options)
     elif options['old_path'] is not None:
         parse_input('old', options['old_path'], options)
-    raw_input('Press enter to finish\n')
+        raw_input('Press enter to finish\n')
 
 
 if __name__ == "__main__":
