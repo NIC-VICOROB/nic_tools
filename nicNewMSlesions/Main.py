@@ -50,12 +50,17 @@ def parse_input(option, dataset_path, options):
     :return: None.
     """
     path = '/'.join(os.path.abspath(__file__).split('/')[:-1])
+    if not os.path.isdir(os.path.join(path, 'config')):
+        os.mkdir(os.path.join(path, 'config'))
     # Let's create that config file for next time...
     baseline_folder = options['time1']
     followup_folder = options['time2']
     if option is 'old' or option is 'new':
         config_name = os.path.join(path, 'config', 'old.conf')
         action = 'old'
+    elif option is 'gui':
+        config_name = os.path.join(path, 'config', 'gui.conf')
+        action = option
     else:
         config_name = os.path.join(path, 'config', 'lr.conf')
         action = option
@@ -86,6 +91,8 @@ def parse_input(option, dataset_path, options):
 
     docker_cmd = [
         'docker', 'run',
+        '-e', 'DISPLAY=%s' % os.environ['DISPLAY'],
+        '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
         '-v', '%s:/home/docker/LR.conf' % config_name,
         '-v', '%s:/home/docker/in/:rw' % dataset_path,
         '-v', '%s:/home/docker/models:rw' % os.path.join(path, 'models'),
@@ -105,10 +112,10 @@ def parse_args():
     :return: Dictionary with the argument values
     """
     parser = argparse.ArgumentParser(description='Run the longitudinal MS lesion segmentation docker.')
-    group = parser.add_mutually_exclusive_group(required=True)
+    group = parser.add_mutually_exclusive_group()
     group.add_argument(
         '-f', '--old',
-        dest='old_path', default=None,
+        dest='old_path', default='/data/longitudinal/',
         help='Option to use the old pipeline in the production docker. The second parameter should be the folder where'
              'the patients are stored.'
     )
@@ -134,6 +141,12 @@ def parse_args():
         '-l', '--leave-one-out',
         dest='loo_path', default=None,
         help='Option to use the logistic regression model with leave-one-out cross-validation. The second parameter'
+             ' should be the folder where the patients are stored.'
+    )
+    group.add_argument(
+        '-g', '--gui',
+        dest='gui_path', default=None,
+        help='Option to use a gui to setup parameters for segmentation and select the method. The second parameter'
              ' should be the folder where the patients are stored.'
     )
     parser.add_argument(
@@ -173,9 +186,7 @@ def main():
     # Argument parsing. If the devel option is used we use the legacy menu. Otherwise just run a simplified
     # version based on the old pipeline.
     options = parse_args()
-    if options['old_path'] is not None:
-        parse_input('old', options['old_path'], options)
-    elif options['new_path'] is not None:
+    if options['new_path'] is not None:
         parse_input('new', options['new_path'], options)
     elif options['train_path'] is not None:
         parse_input('train', options['train_path'], options)
@@ -183,6 +194,11 @@ def main():
         parse_input('test', options['test_path'], options)
     elif options['loo_path'] is not None:
         parse_input('loo', options['loo_path'], options)
+    elif options['gui_path'] is not None:
+        parse_input('gui', options['gui_path'], options)
+    elif options['old_path'] is not None:
+        parse_input('old', options['old_path'], options)
+        raw_input('Press enter to finish\n')
 
 
 if __name__ == "__main__":
