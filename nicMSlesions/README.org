@@ -1,7 +1,9 @@
-#+TITLE: Multiple sclerosis white matter lesion segmentation using convolutional deep neural networks.
+#+TITLE: Multiple sclerosis white matter lesion segmentation using convolutional deep neural networks (Docker edition)
 
 NicMSlesions makes it easy to accurately segment white matter (WM) lesions on Magnetic Resonance Images (MRI) using supervised learning. With nicMSlesions, training and/or inference of a complex neural network model is performed with just a few mouse clicks. More interestingly, nicMSlesions can be trained with a very small set of annotated images, which can be very interesting to facilitate the use
-of supervised deep learning on the fairly amount of yet unlabeled data (see original [[https://arxiv.org/pdf/1805.12415.pdf][publication]] for more information). For a more detailed introduction and source code see [[https://github.com/sergivalverde/nicMSlesions][here]].
+of supervised deep learning on the fairly amount of yet unlabeled data (see original [[https://arxiv.org/pdf/1805.12415.pdf][publication]] for more information).
+
+For a more detailed introduction and source code see [[https://github.com/sergivalverde/nicMSlesions][here]].
 
 * Pre-requisites:
 For running this software, [[https://www.docker.com/][Docker]] has to be available in the host computer. Alternatively, [[https://github.com/NVIDIA/nvidia-docker][nvidia-docker]] has to be installed if the method is run with GPU acceleration. Please, follow the instructions on how to install Docker[[https://docs.docker.com/install/linux/docker-ce/ubuntu/][ here]].
@@ -15,7 +17,9 @@ NicMSlesions can be run from any available command line utility that can access 
 ./nicMSlesions_bash.sh -t
 #+END_SRC
 
-Optionally, the options =-g= for GPU computing and =--u= for self-update can be also set. See =nicMSlesions_bash.sh -h= for a complete update. Similarly, for inference:
+Optionally, the options =-g= for GPU computing and =-u= for self-update can be also set. See =nicMSlesions_bash.sh -h= to see all the available options.
+
+Similarly, for inference:
 
 #+BEGIN_SRC bash
 ./nicMSlesions_bash.sh -t
