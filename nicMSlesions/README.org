@@ -11,7 +11,45 @@ For running this software, [[https://www.docker.com/][Docker]] has to be availab
 Although there is no strict limitation for the host operating system, we only tested the software on GNU/Linux ([[www.ubuntu.com][Ubuntu]]). So on others OSes some instruction might be different. We are open to contributions :).
 
 * Running nicMSlesions:
-NicMSlesions can be run from any available command line utility that can access to Docker. On GNU/Linux systems, to perform training:
+NicMSlesions can be run from any available command line utility that can access to Docker. All model configurations and data options are easily selected from the =config/configuration.cfg= file. For a complete description of each options please refer to the original method:
+
+#+BEGIN_SRC python
+[database]
+train_folder = /path/to/training/data
+inference_folder = /path/to/testing/data
+flair_tags = flair_tag # eg FLAIR+46
+t1_tags = t1_tag # eg MPRAGE+192
+mod3_tags = None # tag to other modalities
+mod4_tags = None # such as T2, DP, etc...
+roi_tags = lesion # lesion tag
+register_modalities = True
+denoise = True
+denoise_iter = 3
+skull_stripping = True
+save_tmp = True
+debug = True
+
+[train]
+full_train = True
+pretrained_model = baseline_2ch
+
+[model]
+name = network_name  # model name (all the trained models are stored in models/models_name
+pretrained = None
+train_split = 0.25
+max_epochs = 400
+patience = 50
+batch_size = 128
+net_verbose = 1
+mode = cuda0 # set to the GPU number or cpu otherwise
+
+[postprocessing]
+t_bin = 0.5
+l_min = 10
+min_error = 0.6
+#+END_SRC
+
+Once the options are configured, training can be performed as:
 
 #+BEGIN_SRC bash
 ./nicMSlesions_bash.sh -t
@@ -33,3 +71,26 @@ NicMSlesions graphical user interface (GUI) is inspired on the classical [[https
 #+END_SRC
 
 where =-d /path/to/data= indicates the path to the data location in the host computer. As before, additional options are =-g= and =-u=. Then, to run the application, follow the indications [[https://github.com/sergivalverde/nicMSlesions][here]].
+
+* Cite:
+
+If you use this software, please cite as:
+
+#+BEGIN_SRC bash
+@article{Valverde2018,
+archivePrefix={arXiv},
+arxivId={1805.12415},
+author={Valverde, Sergi and Salem, Mostafa and Cabezas, Mariano and Pareto, Deborah and Vilanova, Joan C. and Rami{\'{o}}-Torrent{\`{a}}, Llu{\'{i}}s and Rovira, {\`{A}}lex and Salvi, Joaquim and Oliver, Arnau and Llad{\'{o}}, Xavier},
+eprint={1805.12415},
+keywords={automatic lesion segmentation,brain,convolutional neural networks,mri,multiple sclerosis},
+pages={1--13},
+title={{One-shot domain adaptation in multiple sclerosis lesion segmentation using convolutional neural networks}},
+url={http://arxiv.org/abs/1805.12415},
+year={2018}
+}
+#+END_SRC
+
+* Bibliography:
+1. Valverde, S., Salem, M., Cabezas, M., Pareto, D., Vilanova, J. C., Ramió-Torrentà, L., … Lladó, X. (2018). One-shot domain adaptation in multiple sclerosis lesion segmentation using convolutional neural networks, 1–13. Retrieved from [[http://arxiv.org/abs/1805.12415][arxiv]]
+
+2. Valverde, S., Cabezas, M., Roura, E., González-Villà, S., Pareto, D., Vilanova, J. C., … Lladó, X. (2017). Improving automated multiple sclerosis lesion segmentation with a cascaded 3D convolutional neural network approach. NeuroImage, 155, 159–168.
