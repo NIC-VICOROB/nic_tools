@@ -32,6 +32,8 @@ debug = True
 [train]
 full_train = True
 pretrained_model = baseline_2ch
+balanced_training = True
+fraction_negatives = 1
 
 [model]
 name = network_name  # model name (all the trained models are stored in models/models_name
