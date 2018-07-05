@@ -19,7 +19,7 @@ DATE=`date '+%Y-%m-%d-%H:%M'`
 # helper function to show the menu help
 display_help() {
     echo " "
-    echo "nicMSLesions"
+    echo "nicMSLesions_bash"
     echo "-t | --train                   --> perform training"
     echo "-i | --inference               --> perform inference"
     echo "-g | --gpu                     --> Use GPU instead of CPU (requires nvidia-docker)"
