@@ -12,10 +12,18 @@
 RUNMACHINE='true'
 DOCKERMACHINE='docker'
 UPDATEDOCKER='false'
-TRAINING='false'
-INFERENCE='true'
 CURRENT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=`date '+%Y-%m-%d-%H:%M'`
+# get the DOCKER_VERSION
+source docker_version
+echo "--------------------------------------------------"  | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+echo "VERSION: " $DOCKER_VERSION  | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+echo "DATE: " $DATE | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+echo "--------------------------------------------------"  | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+
+TRAINING='false'
+INFERENCE='true'
+
 # helper function to show the menu help
 display_help() {
     echo " "
@@ -71,7 +79,7 @@ done
 if [ $UPDATEDOCKER == 'true' ];
 then
     echo "updating the Docker image"
-    docker pull nicvicorob/mslesions:latest
+    docker pull nicvicorob/mslesions:$DOCKER_VERSION
 fi
 
 # run the docker image
@@ -95,8 +103,8 @@ then
                 -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
                 -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
                 -v /:/data:rw \
-                nicvicorob/mslesions:latest python -u nic_train_network_batch.py --docker | \
-               tee $CURRENT_FOLDER/logs/$DATE.txt
+                nicvicorob/mslesions:$DOCKER_VERSION python -u nic_train_network_batch.py --docker | \
+               tee -a $CURRENT_FOLDER/logs/$DATE.txt
     fi
 
     if [ $INFERENCE == 'true' ];
@@ -105,7 +113,7 @@ then
                 -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
                 -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
                 -v /:/data:rw \
-                nicvicorob/mslesions:latest python -u nic_infer_segmentation_batch.py --docker | \
-               tee $CURRENT_FOLDER/logs/$DATE.txt
+                nicvicorob/mslesions:$DOCKER_VERSION python -u nic_infer_segmentation_batch.py --docker | \
+               tee -a $CURRENT_FOLDER/logs/$DATE.txt
     fi
 fi

@@ -12,9 +12,16 @@
 RUNMACHINE='false'
 DOCKERMACHINE='docker'
 UPDATEDOCKER='false'
-
 CURRENT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=`date '+%Y-%m-%d-%H:%M'`
+
+# get the DOCKER_VERSION
+source docker_version
+echo "--------------------------------------------------"  | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+echo "VERSION: " $DOCKER_VERSION  | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+echo "DATE: " $DATE | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+echo "--------------------------------------------------"  | tee -a $CURRENT_FOLDER/logs/$DATE.txt
+
 
 # helper function to show the menu help
 display_help() {
@@ -73,7 +80,7 @@ done
 if [ $UPDATEDOCKER == 'true' ];
 then
     echo "updating the Docker image"
-    docker pull nicvicorob/mslesions:latest
+    docker pull nicvicorob/mslesions:$DOCKER_VERSION
 fi
 
 # run the docker image
@@ -98,5 +105,5 @@ then
          -v $DATAPATH:/data:rw \
          -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
          -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
-         nicvicorob/mslesions  python -u app.py --docker | tee $CURRENT_FOLDER/logs/$DATE.txt
+         nicvicorob/mslesions:$DOCKER_VERSION  python -u app.py --docker | tee -a $CURRENT_FOLDER/logs/$DATE.txt
 fi
