@@ -168,6 +168,7 @@ def main():
     """
     # Update docker
     print('Checking for updates...', end=' ')
+    sys.stdout.flush()
     with open(os.devnull, 'wb') as dev_null:
         check_call(
             'docker pull nicvicorob/newmslesions:devel',
