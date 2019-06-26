@@ -113,7 +113,8 @@ then
                 -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
                 -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
                 -v /:/data:rw \
-                nicvicorob/mslesions:$DOCKER_VERSION python -u nic_infer_segmentation_batch.py --docker | \
+                nicvicorob/mslesions:$DOCKER_VERSION \
+                python -u nic_infer_segmentation_batch.py --docker | \
                tee -a $CURRENT_FOLDER/logs/$DATE.txt
     fi
 fi
