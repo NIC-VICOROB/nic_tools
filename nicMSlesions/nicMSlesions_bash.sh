@@ -92,7 +92,7 @@ then
     echo  "# MS WM lesion segmentation                      #"
     echo  "#                                                #"
     echo  "# -------------------------------                #"
-    echo  "# (c) Sergi Valverde 2018                        #"
+    echo  "# (c) Sergi Valverde 2019                        #"
     echo  "# Neuroimage Computing Group                     #"
     echo  "# -------------------------------                #"
     echo  "##################################################"
