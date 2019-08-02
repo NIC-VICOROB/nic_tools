@@ -10,7 +10,7 @@
 
 # script variables
 RUNMACHINE='false'
-DOCKERMACHINE='docker'
+DOCKERMACHINE='docker run'
 UPDATEDOCKER='false'
 CURRENT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=`date '+%Y-%m-%d-%H:%M'`
@@ -57,7 +57,7 @@ do
             shift
             ;;
         -g|--gpu)
-            DOCKERMACHINE="nvidia-docker"
+            DOCKERMACHINE="docker run --runtime=nvidia"
             shift
             ;;
         -u|--update)
@@ -98,7 +98,7 @@ then
     echo  "# -------------------------------                #"
     echo  "##################################################"
     echo " "
-    eval $DOCKERMACHINE run -ti  \
+    eval $DOCKERMACHINE -ti  \
          -e DISPLAY=$DISPLAY \
          -u="docker" \
          -v /tmp/.X11-unix:/tmp/.X11-unix \

@@ -10,7 +10,7 @@
 
 # script variables
 RUNMACHINE='true'
-DOCKERMACHINE='docker'
+DOCKERMACHINE='docker run'
 UPDATEDOCKER='false'
 CURRENT_FOLDER="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 DATE=`date '+%Y-%m-%d-%H:%M'`
@@ -48,7 +48,7 @@ do
     key="$1"
     case $key in
         -g|--gpu)
-            DOCKERMACHINE="nvidia-docker"
+            DOCKERMACHINE="docker run --runtime=nvidia"
             shift
             ;;
         -u|--update)
@@ -99,7 +99,7 @@ then
     echo " "
     if [ $TRAINING == 'true' ];
        then
-           eval $DOCKERMACHINE run -ti  \
+           eval $DOCKERMACHINE -ti  \
                 -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
                 -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
                 -v /:/data:rw \
@@ -109,7 +109,8 @@ then
 
     if [ $INFERENCE == 'true' ];
        then
-           eval $DOCKERMACHINE run -ti  \
+	echo $DOCKERMACHINE
+           eval $DOCKERMACHINE -ti  \
                 -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
                 -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
                 -v /:/data:rw \
