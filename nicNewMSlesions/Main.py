@@ -91,7 +91,7 @@ def parse_input(option, dataset_path, options):
 
     docker_cmd = [
         'docker', 'run',
-        '--user' if options['user'] is not None else '',
+        '-u' if options['user'] is not None else '',
         options['user'] if options['user'] is not None else ''
         '-e', 'DISPLAY=%s' % os.environ['DISPLAY'] if 'DISPLAY' in os.environ.keys() else ':0',
         '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
