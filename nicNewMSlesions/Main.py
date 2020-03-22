@@ -91,13 +91,13 @@ def parse_input(option, dataset_path, options):
 
     docker_cmd = [
         'docker', 'run',
+        '--user' if options['user'] is not None else '',
+        options['user'] if options['user'] is not None else ''
         '-e', 'DISPLAY=%s' % os.environ['DISPLAY'] if 'DISPLAY' in os.environ.keys() else ':0',
         '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
         '-v', '%s:/home/docker/LR.conf' % config_name,
         '-v', '%s:/home/docker/in/:rw' % dataset_path,
         '-v', '%s:/home/docker/models:rw' % os.path.join(path, 'models'),
-        '--user' if options['user'] is not None else '',
-        options['user'] if options['user'] is not None else ''
         '-it',
         docker_image
     ]
