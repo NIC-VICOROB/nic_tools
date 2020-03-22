@@ -91,7 +91,7 @@ def parse_input(option, dataset_path, options):
 
     docker_cmd = [
         'docker', 'run',
-        '-e', 'DISPLAY=%s' % os.environ['DISPLAY'] if os.environ['DISPLAY'] else ':0',
+        '-e', 'DISPLAY=%s' % os.environ['DISPLAY'] if 'DISPLAY' in os.environ.keys() else ':0',
         '-v', '/tmp/.X11-unix:/tmp/.X11-unix',
         '-v', '%s:/home/docker/LR.conf' % config_name,
         '-v', '%s:/home/docker/in/:rw' % dataset_path,
