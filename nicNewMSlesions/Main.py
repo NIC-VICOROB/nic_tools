@@ -96,6 +96,8 @@ def parse_input(option, dataset_path, options):
         '-v', '%s:/home/docker/LR.conf' % config_name,
         '-v', '%s:/home/docker/in/:rw' % dataset_path,
         '-v', '%s:/home/docker/models:rw' % os.path.join(path, 'models'),
+        '--user' if options['user'] is not None else '',
+        options['user'] if options['user'] is not None else ''
         '-it',
         docker_image
     ]
@@ -157,6 +159,11 @@ def parse_args():
     parser.add_argument(
         '-F', '--time2',
         dest='time2', default='time2',
+        help='Name of the followup folder'
+    )
+    parser.add_argument(
+        '-u', '--user',
+        dest='user', default=None,
         help='Name of the followup folder'
     )
     return vars(parser.parse_args())
