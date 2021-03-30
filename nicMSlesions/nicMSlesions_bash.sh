@@ -22,7 +22,7 @@ echo "DATE: " $DATE | tee -a $CURRENT_FOLDER/logs/$DATE.txt
 echo "--------------------------------------------------"  | tee -a $CURRENT_FOLDER/logs/$DATE.txt
 
 TRAINING='false'
-INFERENCE='true'
+INFERENCE='false'
 
 # helper function to show the menu help
 display_help() {
@@ -97,12 +97,17 @@ then
     echo  "# -------------------------------                #"
     echo  "##################################################"
     echo " "
+    
+    # get current user 
+    CURRENT_USER = `id -u $USERNAME`
+    
     if [ $TRAINING == 'true' ];
        then
            eval $DOCKERMACHINE -ti  \
                 -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
                 -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
                 -v /:/data:rw \
+		-u $CURRENT_USER$':1000' \
                 nicvicorob/mslesions:$DOCKER_VERSION python -u nic_train_network_batch.py --docker | \
                tee -a $CURRENT_FOLDER/logs/$DATE.txt
     fi
@@ -114,6 +119,7 @@ then
                 -v $CURRENT_FOLDER/config:/home/docker/src/config:rw \
                 -v $CURRENT_FOLDER/models:/home/docker/src/nets:rw \
                 -v /:/data:rw \
+		-u $CURRENT_USER$':1000' \
                 nicvicorob/mslesions:$DOCKER_VERSION \
                 python -u nic_infer_segmentation_batch.py --docker | \
                tee -a $CURRENT_FOLDER/logs/$DATE.txt
